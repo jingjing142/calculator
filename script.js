@@ -18,6 +18,7 @@ class Calculator {
     }
     
     percent() {
+        if(this.currentOperand === "") return;
         let percent = this.currentOperand / 100;
         this.currentOperand = percent; 
     }
