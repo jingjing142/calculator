@@ -10,22 +10,29 @@ class Calculator {
         this.currentOperand = "";
         this.previousOperand = "";
         this.operation = undefined;
-
     }
 
     delete() {
         this.currentOperand = this.currentOperand.toString().slice(0, -1);
     }
-    
+
     percent() {
-        if(this.currentOperand === "") return;
+        if (this.currentOperand === "") return;
         let percent = this.currentOperand / 100;
-        this.currentOperand = percent; 
+        this.currentOperand = percent;
     }
 
     appendNumber(number) {
         if (number === "." && this.currentOperand.includes(".")) return;
-        this.currentOperand = this.currentOperand.toString() + number.toString();
+
+        //Disables zeros in front of numbers
+        if (number === "0" && this.currentOperand.match(/^0+/) && !this.currentOperand.includes(".")) {
+            this.currentOperand.replace(/^0+/, '');
+        } else if (!(number === "0") && !(number === ".") && this.currentOperand.match(/^0+/) && !this.currentOperand.includes(".")) {
+            this.currentOperand = number.toString();
+        } else {
+            this.currentOperand = this.currentOperand.toString() + number.toString();
+        }
     }
 
     chooseOperation(operation) {
@@ -40,40 +47,40 @@ class Calculator {
         let computation;
         const prev = parseFloat(this.previousOperand);
         const current = parseFloat(this.currentOperand);
-        
+
         if (isNaN(prev) || isNaN(current)) return;
-        
-        switch (this.operation)  {
 
-        case "+":
-            computation = +(prev + current).toFixed(8);
-        break;
+        switch (this.operation) {
 
-        case "-":
-            computation = +(prev - current).toFixed(8);
-        break;
+            case "+":
+                computation = +(prev + current).toFixed(8);
+                break;
 
-        case "*":
-            computation = +(prev * current).toFixed(8);
-        break;
+            case "-":
+                computation = +(prev - current).toFixed(8);
+                break;
 
-        case "÷":
-            if(current === 0) {
-                computation = "You can't divide by 0. It's undefined :("
-            } else {
-                computation = +(prev / current).toFixed(8);
-            }
-        
-        case "/":
-            if(current === 0) {
-                computation = "You can't divide by 0. It's undefined :("
-            } else {
-                computation = +(prev / current).toFixed(8);
-            }
-        break;
+            case "*":
+                computation = +(prev * current).toFixed(8);
+                break;
 
-        default:
-            return;
+            case "÷":
+                if (current === 0) {
+                    computation = "You can't divide by 0. It's undefined :("
+                } else {
+                    computation = +(prev / current).toFixed(8);
+                }
+
+            case "/":
+                if (current === 0) {
+                    computation = "You can't divide by 0. It's undefined :("
+                } else {
+                    computation = +(prev / current).toFixed(8);
+                }
+                break;
+
+            default:
+                return;
         }
 
         this.readyToReset = true;
@@ -86,7 +93,7 @@ class Calculator {
         this.currentOperandTextElement.innerText = this.currentOperand;
         if (this.operation != null) {
             this.previousOperandTextElement.innerText =
-            `${this.previousOperand} ${this.operation}`
+                `${this.previousOperand} ${this.operation}`
         } else {
             this.previousOperandTextElement.innerText = "";
         }
@@ -107,9 +114,9 @@ const calculator = new Calculator(previousOperandTextElement, currentOperandText
 
 numberButtons.forEach(button => {
     button.addEventListener("click", () => {
-        if(calculator.previousOperand === "" &&
-        calculator.currentOperand !== "" &&
-        calculator.readyToReset) {
+        if (calculator.previousOperand === "" &&
+            calculator.currentOperand !== "" &&
+            calculator.readyToReset) {
             calculator.currentOperand = "";
             calculator.readyToReset = false;
         }
@@ -150,7 +157,7 @@ percentButton.addEventListener("click", () => {
 
 window.addEventListener('keydown', (event) => {
 
-    if((event.key).match("^[0-9,.]")) {
+    if ((event.key).match("^[0-9,.]")) {
         calculator.appendNumber(+event.key);
         calculator.updateDisplay();
     } else if ((event.key).match("[+,*,/,-]")) {
